@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
 	"path/filepath"
+	"strings"
 )
 
 import (
@@ -13,10 +15,9 @@ import (
 )
 
 var gConfig []byte
+var config = flag.String("config", "", "config json file")
 
 func main() {
-	config := flag.String("config", "", "config json file")
-
 	flag.Parse()
 
 	files := flag.Args()
@@ -35,7 +36,7 @@ func isDir(filename string) bool {
 }
 
 func checkFile(fileName string) {
-	file, err := ioutil.ReadAll(fileName)
+	file, err := ioutil.ReadFile(fileName)
 	if err != nil {
 		log.Printf("Read File Fail %v %v", fileName, err)
 	}
@@ -50,8 +51,8 @@ func checkFile(fileName string) {
 		log.Printf("Parse File Fail %v %v", fileName, err)
 	}
 
-	for _, v := range ps {
-		fmt.Printf("%s:%v: %s\n", filename, p.Position, p.Description)
+	for _, p := range ps {
+		fmt.Printf("%s:%v: %s\n", fileName, p.Position, p.Description)
 	}
 }
 
