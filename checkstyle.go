@@ -5,9 +5,9 @@ import (
 )
 
 type Problem struct {
-	Position    token.Position // position in source file
+	Position    token.Position
 	Description string
-	LineText    string // the source line
+	SourceLine  string
 }
 
 type Checker interface {
@@ -18,6 +18,7 @@ type checker struct {
 }
 
 func (c *checker) Check(fileName string, src []byte) ([]Problem, error) {
+	return nil, nil
 }
 
 func New(config []byte) (Checker, error) {
