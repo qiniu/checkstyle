@@ -1,7 +1,7 @@
 package checkstyle
 
 import (
-	"go/ast"
+	"go/token"
 )
 
 type Problem struct {
