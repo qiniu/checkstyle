@@ -1,0 +1,6 @@
+package testdata
+
+func hello(){
+}
+
+
