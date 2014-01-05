@@ -15,12 +15,17 @@ type Checker interface {
 }
 
 type checker struct {
-}
-
-func (c *checker) Check(fileName string, src []byte) ([]Problem, error) {
-	return nil, nil
+	FunctionComment bool
+	FileLine        uint
+	FunctionLine    uint
+	MaxIndent       uint
+	IndentFormat    bool
 }
 
 func New(config []byte) (Checker, error) {
 	return &checker{}, nil
+}
+
+func (c *checker) Check(fileName string, src []byte) ([]Problem, error) {
+	return nil, nil
 }
