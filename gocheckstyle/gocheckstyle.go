@@ -14,13 +14,24 @@ import (
 	"github.com/longbai/checkstyle"
 )
 
-var gConfig []byte
 var config = flag.String("config", "", "config json file")
+
+var checker checkstyle.Checker
 
 func main() {
 	flag.Parse()
 
 	files := flag.Args()
+
+	conf, err := ioutil.ReadFile(*config)
+	if err != nil {
+		panic(err)
+	}
+	checker, err = checkstyle.New(conf)
+	if err != nil {
+		panic("New Checker Fail " + err.Error())
+	}
+
 	for _, v := range files {
 		if isDir(v) {
 			checkDir(v)
@@ -39,11 +50,6 @@ func checkFile(fileName string) {
 	file, err := ioutil.ReadFile(fileName)
 	if err != nil {
 		log.Printf("Read File Fail %v %v", fileName, err)
-	}
-
-	checker, err := checkstyle.New(gConfig)
-	if err != nil {
-		panic("New Checker Fail")
 	}
 
 	ps, err := checker.Check(fileName, file)

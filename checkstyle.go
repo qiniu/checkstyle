@@ -1,6 +1,7 @@
 package checkstyle
 
 import (
+	"encoding/json"
 	"fmt"
 	"go/ast"
 	"go/parser"
@@ -20,15 +21,20 @@ type Checker interface {
 }
 
 type checker struct {
-	FunctionComment bool
-	FileLine        int
-	FunctionLine    int
-	MaxIndent       int
-	IndentFormat    bool
+	FunctionComment bool `json:"func_comment"`
+	FileLine        int  `json:"file_line"`
+	FunctionLine    int  `json:"func_line"`
+	MaxIndent       int  `json:"max_indent"`
+	IndentCare      bool `json:"indent_care"`
 }
 
 func New(config []byte) (Checker, error) {
-	return &checker{FileLine: 10}, nil
+	var _checker checker
+	err := json.Unmarshal(config, &_checker)
+	if err != nil {
+		return nil, err
+	}
+	return &_checker, nil
 }
 
 func (c *checker) Check(fileName string, src []byte) (ps []Problem, err error) {
@@ -58,6 +64,8 @@ func (f *file) isTest() bool {
 
 func (f *file) check() (ps []Problem) {
 	f.checkFileLine()
+	f.checkFunctionLine()
+
 	return f.problems
 }
 
@@ -82,4 +90,30 @@ func (f *file) checkFileLine() {
 		}
 		return true
 	})
+}
+
+func (f *file) checkFunctionLine() {
+	if f.isTest() {
+		return
+	}
+
+	lineLimit := f.config.FunctionLine
+
+	if lineLimit == 0 {
+		return
+	}
+	for _, v := range f.ast.Decls {
+		switch v := v.(type) {
+		case *ast.FuncDecl:
+			start := f.fset.Position(v.Pos())
+			startLine := start.Line
+			endLine := f.fset.Position(v.End()).Line
+			lineCount := endLine - startLine
+			if lineCount > lineLimit {
+				desc := "func " + v.Name.Name + "() " + strconv.Itoa(lineCount) + " lines more than " + strconv.Itoa(lineLimit)
+				problem := Problem{Description: desc, Position: &start}
+				f.problems = append(f.problems, problem)
+			}
+		}
+	}
 }
