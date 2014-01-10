@@ -14,6 +14,6 @@ To install, run
 * check if ... indent counts
 * check typo
 * check indent not same
-
+* check function comment export
 
 inspired by [java checkstyle](https://github.com/checkstyle/checkstyle), [golint] (https://github.com/golang/lint)
