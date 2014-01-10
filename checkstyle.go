@@ -2,7 +2,6 @@ package checkstyle
 
 import (
 	"encoding/json"
-	"fmt"
 	"go/ast"
 	"go/parser"
 	"go/token"
@@ -81,10 +80,10 @@ func (f *file) checkFileLine() {
 
 	f.fset.Iterate(func(_file *token.File) bool {
 		lineCount := _file.LineCount()
-		fmt.Println("file lines", lineCount)
 		if lineCount > lineLimit {
 			desc := strconv.Itoa(lineCount) + " lines more than " + strconv.Itoa(lineLimit)
-			problem := Problem{Description: desc}
+			pos := f.fset.Position(f.ast.End())
+			problem := Problem{Description: desc, Position: &pos}
 			f.problems = append(f.problems, problem)
 			return false
 		}
