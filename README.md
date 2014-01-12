@@ -9,11 +9,11 @@ To install, run
 ##complete
 * check file line
 * check function line
+* check file is formated
 
-##todo
+##todo in issue
 * check if ... indent counts
 * check typo
-* check indent not same
 * check function comment export
 
 inspired by [java checkstyle](https://github.com/checkstyle/checkstyle), [golint] (https://github.com/golang/lint)
