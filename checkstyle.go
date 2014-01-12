@@ -1,18 +1,29 @@
 package checkstyle
 
 import (
+	"bytes"
 	"encoding/json"
 	"go/ast"
+	"go/format"
 	"go/parser"
 	"go/token"
 	"strconv"
 	"strings"
 )
 
+type ProblemType string
+
+const (
+	FileLine     = "FileLine"
+	FunctionLine = "FunctionLine"
+	Formated     = "Formated"
+)
+
 type Problem struct {
 	Position    *token.Position
 	Description string
 	SourceLine  string
+	Type        ProblemType
 }
 
 type Checker interface {
@@ -24,7 +35,7 @@ type checker struct {
 	FileLine        int  `json:"file_line"`
 	FunctionLine    int  `json:"func_line"`
 	MaxIndent       int  `json:"max_indent"`
-	IndentCare      bool `json:"indent_care"`
+	Formated        bool `json:"formated"`
 }
 
 func New(config []byte) (Checker, error) {
@@ -62,10 +73,24 @@ func (f *file) isTest() bool {
 }
 
 func (f *file) check() (ps []Problem) {
+	f.checkFormat()
 	f.checkFileLine()
 	f.checkFunctionLine()
-
 	return f.problems
+}
+
+func (f *file) checkFormat() {
+	if !f.config.Formated {
+		return
+	}
+	src, err := format.Source(f.src)
+	panic(err)
+	if bytes.Compare(src, f.src) != 0 {
+		desc := "source is not formated"
+		pos := f.fset.Position(f.ast.Pos())
+		problem := Problem{Description: desc, Position: &pos, Type: Formated}
+		f.problems = append(f.problems, problem)
+	}
 }
 
 func (f *file) checkFileLine() {
@@ -83,7 +108,7 @@ func (f *file) checkFileLine() {
 		if lineCount > lineLimit {
 			desc := strconv.Itoa(lineCount) + " lines more than " + strconv.Itoa(lineLimit)
 			pos := f.fset.Position(f.ast.End())
-			problem := Problem{Description: desc, Position: &pos}
+			problem := Problem{Description: desc, Position: &pos, Type: FileLine}
 			f.problems = append(f.problems, problem)
 			return false
 		}
@@ -110,7 +135,7 @@ func (f *file) checkFunctionLine() {
 			lineCount := endLine - startLine
 			if lineCount > lineLimit {
 				desc := "func " + v.Name.Name + "() " + strconv.Itoa(lineCount) + " lines more than " + strconv.Itoa(lineLimit)
-				problem := Problem{Description: desc, Position: &start}
+				problem := Problem{Description: desc, Position: &start, Type: FunctionLine}
 				f.problems = append(f.problems, problem)
 			}
 		}
