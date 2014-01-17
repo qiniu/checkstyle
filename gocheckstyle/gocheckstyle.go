@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"flag"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -47,7 +46,7 @@ func main() {
 	}
 	checker, err = checkstyle.New(conf)
 	if err != nil {
-		log.Printf("New Checker Fail %s\n", err.Error())
+		log.Printf("New Checker Fail %v\n", err)
 		return
 	}
 
