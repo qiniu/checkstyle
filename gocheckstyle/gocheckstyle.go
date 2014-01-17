@@ -47,7 +47,7 @@ func main() {
 	}
 	checker, err = checkstyle.New(conf)
 	if err != nil {
-		fmt.Errorf("New Checker Fail %s\n", err.Error())
+		log.Printf("New Checker Fail %s\n", err.Error())
 		return
 	}
 
