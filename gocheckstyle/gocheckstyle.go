@@ -67,16 +67,17 @@ func isDir(filename string) bool {
 func checkFile(fileName string) {
 	file, err := ioutil.ReadFile(fileName)
 	if err != nil {
-		log.Printf("Read File Fail %v %v\n", fileName, err)
+		log.Fatalf("Read File Fail %v %v\n", fileName, err)
 	}
 
 	ps, err := checker.Check(fileName, file)
 	if err != nil {
-		log.Printf("Parse File Fail %v %v\n", fileName, err)
+		log.Fatalf("Parse File Fail %v %v\n", fileName, err)
 	}
 
 	for _, p := range ps {
 		log.Printf("%v: %s\n", p.Position, p.Description)
+		os.Exit(1)
 	}
 }
 
