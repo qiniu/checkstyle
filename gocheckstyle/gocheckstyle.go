@@ -24,30 +24,28 @@ type Ignore struct {
 
 var ignore Ignore
 
+var problemsCount uint32
+
 func main() {
 	flag.Parse()
 
 	files := flag.Args()
 
 	if config == nil {
-		log.Println("No Config")
-		return
+		log.Fatalln("No config")
 	}
 	conf, err := ioutil.ReadFile(*config)
 	if err != nil {
-		log.Printf("Open Config %v Fail %v\n", *config, err)
-		return
+		log.Fatalf("Open config %v fail %v\n", *config, err)
 	}
 
 	err = json.Unmarshal(conf, &ignore)
 	if err != nil {
-		log.Printf("Parse Config %v Fail \n", *config, err)
-		return
+		log.Fatalf("Parse config %v fail \n", *config, err)
 	}
 	checker, err = checkstyle.New(conf)
 	if err != nil {
-		log.Printf("New Checker Fail %v\n", err)
-		return
+		log.Fatalf("New checker fail %v\n", err)
 	}
 
 	for _, v := range files {
@@ -56,6 +54,9 @@ func main() {
 		} else {
 			checkFile(v)
 		}
+	}
+	if problemsCount != 0 {
+		log.Fatalf("There is %d problems", problemsCount)
 	}
 }
 
@@ -77,7 +78,7 @@ func checkFile(fileName string) {
 
 	for _, p := range ps {
 		log.Printf("%v: %s\n", p.Position, p.Description)
-		os.Exit(1)
+		problemsCount++
 	}
 }
 

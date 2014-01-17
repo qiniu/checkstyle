@@ -85,7 +85,7 @@ func (f *file) checkFormat() {
 	}
 	src, err := format.Source(f.src)
 	if err != nil {
-		panic(err)
+		panic(f.fileName + err.Error())
 	}
 	if bytes.Compare(src, f.src) != 0 {
 		desc := "source is not formated"
