@@ -77,7 +77,7 @@ func checkFile(fileName string) {
 	}
 
 	for _, p := range ps {
-		fmt.Printf("%v: %s\n", p.Position, p.Description)
+		log.Printf("%v: %s\n", p.Position, p.Description)
 	}
 }
 
