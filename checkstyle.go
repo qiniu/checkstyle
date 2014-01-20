@@ -37,7 +37,7 @@ type checker struct {
 	FunctionLine    int      `json:"func_line"`
 	MaxIndent       int      `json:"max_indent"`
 	Formated        bool     `json:"formated"`
-	Fatal           []string `json:"faltal"`
+	Fatal           []string `json:"fatal"`
 }
 
 func New(config []byte) (Checker, error) {
