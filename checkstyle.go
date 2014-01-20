@@ -14,9 +14,9 @@ import (
 type ProblemType string
 
 const (
-	FileLine     = "FileLine"
-	FunctionLine = "FunctionLine"
-	Formated     = "Formated"
+	FileLine     ProblemType = "file_line"
+	FunctionLine ProblemType = "func_line"
+	Formated     ProblemType = "formated"
 )
 
 type Problem struct {
@@ -28,14 +28,16 @@ type Problem struct {
 
 type Checker interface {
 	Check(fileName string, src []byte) ([]Problem, error)
+	IsFatal(p *Problem) bool
 }
 
 type checker struct {
-	FunctionComment bool `json:"func_comment"`
-	FileLine        int  `json:"file_line"`
-	FunctionLine    int  `json:"func_line"`
-	MaxIndent       int  `json:"max_indent"`
-	Formated        bool `json:"formated"`
+	FunctionComment bool     `json:"func_comment"`
+	FileLine        int      `json:"file_line"`
+	FunctionLine    int      `json:"func_line"`
+	MaxIndent       int      `json:"max_indent"`
+	Formated        bool     `json:"formated"`
+	Fatal           []string `json:"faltal"`
 }
 
 func New(config []byte) (Checker, error) {
@@ -54,6 +56,15 @@ func (c *checker) Check(fileName string, src []byte) (ps []Problem, err error) {
 		return nil, err
 	}
 	return (&file{fileName, src, c, f, fset, []Problem{}}).check(), nil
+}
+
+func (c *checker) IsFatal(p *Problem) bool {
+	for _, v := range c.Fatal {
+		if v == string(p.Type) {
+			return true
+		}
+	}
+	return false
 }
 
 type file struct {

@@ -25,6 +25,7 @@ type Ignore struct {
 var ignore Ignore
 
 var problemsCount uint32
+var fatalCount uint32
 
 func main() {
 	flag.Parse()
@@ -56,7 +57,11 @@ func main() {
 		}
 	}
 	if problemsCount != 0 {
-		log.Fatalf("There is %d problems", problemsCount)
+		log.Printf("There are %d problems\n", problemsCount)
+	}
+
+	if fatalCount != 0 {
+		log.Fatalf("There are %d fatal problems\n", fatalCount)
 	}
 }
 
@@ -79,6 +84,9 @@ func checkFile(fileName string) {
 	for _, p := range ps {
 		log.Printf("%v: %s\n", p.Position, p.Description)
 		problemsCount++
+		if checker.IsFatal(&p) {
+			fatalCount++
+		}
 	}
 }
 

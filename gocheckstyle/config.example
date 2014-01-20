@@ -3,6 +3,9 @@
     "file_line":200,
     "func_line":50,
     "max_indent":10,
-    "formated": false,
-    "ignore":[""]
+    "formated": true,
+    "ignore":[""],
+    "fatal":[
+        "formated"
+    ]
 }
