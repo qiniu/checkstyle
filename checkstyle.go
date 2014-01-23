@@ -123,7 +123,6 @@ func (f *file) checkFileLine() {
 			pos := f.fset.Position(f.ast.End())
 			problem := Problem{Description: desc, Position: &pos, Type: FileLine}
 			f.problems = append(f.problems, problem)
-			return false
 		}
 		return true
 	})
