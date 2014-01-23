@@ -8,10 +8,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-)
 
-import (
-	"github.com/longbai/checkstyle"
+	"github.com/qiniu/checkstyle"
 )
 
 var config = flag.String("config", "", "config json file")
