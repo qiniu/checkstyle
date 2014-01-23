@@ -3,9 +3,12 @@ go-checkstyle
 
 checkstyle for go
 
-To install, run
-  go get github.com/longbai/checkstyle/gocheckstyle
+##to install, run
+  go get github.com/qiniu/checkstyle/gocheckstyle
 
+##to run
+  gocheckstyle -config=.go_style dir1 dir2
+  
 ##complete
 * check file line
 * check function line
