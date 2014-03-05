@@ -89,11 +89,11 @@ func checkFile(fileName string) {
 		log.Fatalf("Parse File Fail %v %v\n", fileName, err)
 	}
 
-	for _, p := range ps {
+	for i, p := range ps {
 		if checker.IsFatal(&p) {
-			fatalProblems = append(fatalProblems, &p)
+			fatalProblems = append(fatalProblems, &ps[i])
 		} else {
-			normalProblems = append(normalProblems, &p)
+			normalProblems = append(normalProblems, &ps[i])
 		}
 	}
 }
