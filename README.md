@@ -1,7 +1,7 @@
 go-checkstyle
 =============
 
-checkstyle for go
+checkstyle for go [![Coverage Status](https://coveralls.io/repos/qiniu/checkstyle/badge.png)](https://coveralls.io/r/qiniu/checkstyle)
 
 ##to install, run
   go get github.com/qiniu/checkstyle/gocheckstyle
