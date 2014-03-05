@@ -129,6 +129,12 @@ func (f *file) checkFileLine() {
 	})
 }
 
+func genFuncLineProblem(name string, lineCount, lineLimit int, start token.Position) Problem {
+	desc := "func " + name + "() " + strconv.Itoa(lineCount) +
+		" lines more than " + strconv.Itoa(lineLimit)
+	return Problem{Description: desc, Position: &start, Type: FunctionLine}
+}
+
 func (f *file) checkFunctionLine() {
 	if f.isTest() {
 		return
@@ -147,8 +153,7 @@ func (f *file) checkFunctionLine() {
 			endLine := f.fset.Position(v.End()).Line
 			lineCount := endLine - startLine
 			if lineCount > lineLimit {
-				desc := "func " + v.Name.Name + "() " + strconv.Itoa(lineCount) + " lines more than " + strconv.Itoa(lineLimit)
-				problem := Problem{Description: desc, Position: &start, Type: FunctionLine}
+				problem := genFuncLineProblem(v.Name.Name, lineCount, lineLimit, start)
 				f.problems = append(f.problems, problem)
 			}
 		}
