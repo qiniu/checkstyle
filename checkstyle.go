@@ -16,6 +16,8 @@ type ProblemType string
 const (
 	FileLine     ProblemType = "file_line"
 	FunctionLine ProblemType = "func_line"
+	ParamsNum    ProblemType = "params_num"
+	ResultsNum   ProblemType = "results_num"
 	Formated     ProblemType = "formated"
 )
 
@@ -38,6 +40,8 @@ type checker struct {
 	MaxIndent       int      `json:"max_indent"`
 	Formated        bool     `json:"formated"`
 	Fatal           []string `json:"fatal"`
+	ParamsNum       int      `json:"params_num"`
+	ResultsNum      int      `json:"results_num"`
 }
 
 func New(config []byte) (Checker, error) {
@@ -129,9 +133,21 @@ func (f *file) checkFileLine() {
 }
 
 func genFuncLineProblem(name string, lineCount, lineLimit int, start token.Position) Problem {
-	desc := "func " + name + "() " + strconv.Itoa(lineCount) +
-		" lines more than " + strconv.Itoa(lineLimit)
+	desc := "func " + name + "() body lines num " + strconv.Itoa(lineCount) +
+		" more than " + strconv.Itoa(lineLimit)
 	return Problem{Description: desc, Position: &start, Type: FunctionLine}
+}
+
+func genParamsNumProblem(name string, paramsNum, limit int, start token.Position) Problem {
+	desc := "func " + name + "() params num " + strconv.Itoa(paramsNum) +
+		"  more than " + strconv.Itoa(limit)
+	return Problem{Description: desc, Position: &start, Type: ParamsNum}
+}
+
+func genResultsNumProblem(name string, resultsNum, limit int, start token.Position) Problem {
+	desc := "func " + name + "() results num " + strconv.Itoa(resultsNum) +
+		"  more than " + strconv.Itoa(limit)
+	return Problem{Description: desc, Position: &start, Type: ResultsNum}
 }
 
 func (f *file) checkFunctionLine() {
@@ -140,19 +156,32 @@ func (f *file) checkFunctionLine() {
 	}
 
 	lineLimit := f.config.FunctionLine
-
-	if lineLimit == 0 {
-		return
-	}
+	paramsNumLimit := f.config.ParamsNum
+	resultsNumLimit := f.config.ResultsNum
 	for _, v := range f.ast.Decls {
-		switch v := v.(type) {
+		switch v2 := v.(type) {
 		case *ast.FuncDecl:
-			start := f.fset.Position(v.Pos())
-			startLine := start.Line
-			endLine := f.fset.Position(v.End()).Line
-			lineCount := endLine - startLine
-			if lineCount > lineLimit {
-				problem := genFuncLineProblem(v.Name.Name, lineCount, lineLimit, start)
+			start := f.fset.Position(v2.Pos())
+			if lineLimit > 0 {
+				startLine := start.Line
+				endLine := f.fset.Position(v2.End()).Line
+				lineCount := endLine - startLine
+				if lineCount > lineLimit {
+					problem := genFuncLineProblem(v2.Name.Name, lineCount, lineLimit, start)
+					f.problems = append(f.problems, problem)
+				}
+			}
+
+			_type := v2.Type
+			params := _type.Params
+			if paramsNumLimit != 0 && params.NumFields() > paramsNumLimit {
+				problem := genParamsNumProblem(v2.Name.Name, params.NumFields(), paramsNumLimit, start)
+				f.problems = append(f.problems, problem)
+			}
+
+			results := _type.Results
+			if resultsNumLimit != 0 && results.NumFields() > resultsNumLimit {
+				problem := genResultsNumProblem(v2.Name.Name, results.NumFields(), resultsNumLimit, start)
 				f.problems = append(f.problems, problem)
 			}
 		}

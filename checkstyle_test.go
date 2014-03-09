@@ -68,6 +68,72 @@ func TestFunctionLine(t *testing.T) {
 	}
 }
 
+func TestParamsNum(t *testing.T) {
+	fileName := "params_num.go"
+	file := readFile(fileName)
+	_checkerOk := checker{ParamsNum: 4}
+	ps, err := _checkerOk.Check(fileName, file)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(ps) != 0 {
+		t.Fatal("expect no error")
+	}
+
+	_checkerFail := checker{ParamsNum: 3}
+	ps, _ = _checkerFail.Check(fileName, file)
+	if len(ps) != 1 || ps[0].Type != ParamsNum {
+		t.Fatal("expect an error")
+	}
+
+	if ps[0].Position.Filename != fileName {
+		t.Fatal("file name is not correct")
+	}
+
+	if ps[0].Position.Line != 7 {
+		t.Fatal("start position is not correct")
+	}
+
+	_checkerFail = checker{ParamsNum: 2}
+	ps, _ = _checkerFail.Check(fileName, file)
+	if len(ps) != 2 {
+		t.Fatal("expect 2 error")
+	}
+}
+
+func TestResulsNum(t *testing.T) {
+	fileName := "results_num.go"
+	file := readFile(fileName)
+	_checkerOk := checker{ResultsNum: 4}
+	ps, err := _checkerOk.Check(fileName, file)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(ps) != 0 {
+		t.Fatal("expect no error")
+	}
+
+	_checkerFail := checker{ResultsNum: 3}
+	ps, _ = _checkerFail.Check(fileName, file)
+	if len(ps) != 1 || ps[0].Type != ResultsNum {
+		t.Fatal("expect an error")
+	}
+
+	if ps[0].Position.Filename != fileName {
+		t.Fatal("file name is not correct")
+	}
+
+	if ps[0].Position.Line != 7 {
+		t.Fatal("start position is not correct")
+	}
+
+	_checkerFail = checker{ResultsNum: 2}
+	ps, _ = _checkerFail.Check(fileName, file)
+	if len(ps) != 2 {
+		t.Fatal("expect 2 error")
+	}
+}
+
 func TestFormated(t *testing.T) {
 	fileName := "formated.go"
 	file := readFile(fileName)
