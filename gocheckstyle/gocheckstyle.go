@@ -107,9 +107,24 @@ func isIgnore(fileName string) bool {
 	return false
 }
 
+func isIgnoreDir(dir string) bool {
+	for _, v := range ignore.Files {
+		if ok, _ := filepath.Match(v, dir); ok {
+			return true
+		}
+	}
+	return false
+}
+
 func checkDir(dir string) {
+	if isIgnoreDir(dir) {
+		return
+	}
 	filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
-		if err == nil && !info.IsDir() && strings.HasSuffix(path, ".go") && !isIgnore(path) {
+		if err == nil && info.IsDir() && isIgnoreDir(path) {
+			return filepath.SkipDir
+		}
+		if err == nil && !info.IsDir() && strings.HasSuffix(path, ".go") && !isIgnoreFile(path) {
 			checkFile(path)
 		}
 		return err
