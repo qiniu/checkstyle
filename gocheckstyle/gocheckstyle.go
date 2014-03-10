@@ -100,7 +100,7 @@ func checkFile(fileName string) {
 
 func isIgnore(fileName string) bool {
 	for _, v := range ignore.Files {
-		if v == fileName {
+		if ok, _ := filepath.Match(v, fileName); ok {
 			return true
 		}
 	}
