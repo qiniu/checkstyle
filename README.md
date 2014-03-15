@@ -17,6 +17,7 @@ checkstyle is a style check tool like java checkstyle. This tool inspired by [ja
     "params_num":4,
     "results_num":3,
     "formated": true,
+    "pkg_name": true,
     "ignore":[
         "a/*",
         "b/*/c/*.go"
@@ -42,7 +43,4 @@ Run checkstyle with one or more filenames or directories. The output of this too
 ## checkstyle's difference with other tools
 Checkstyle differs from gofmt. Gofmt reformats Go source code, whereas checkstyle prints out coding style suggerstion.
 
-Checkstyle differs from golint. Checkstyle only checks coding rule, not mistake; it is just subjective suggestion. 
-
-
-
+Checkstyle differs from golint. Checkstyle only checks coding rule, not mistake; it is just subjective suggestion.
