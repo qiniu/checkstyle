@@ -160,3 +160,45 @@ func TestFormated(t *testing.T) {
 		t.Fatal("file line problem position not match")
 	}
 }
+
+func TestPackageName(t *testing.T) {
+	fileName := "caps_pkg.go"
+	file := readFile(fileName)
+	_checker := checker{PackageName: false}
+	ps, err := _checker.Check(fileName, file)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(ps) != 0 {
+		t.Fatal("expect no error")
+	}
+	fileName = "underscore_pkg.go"
+	file = readFile(fileName)
+	ps, err = _checker.Check(fileName, file)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(ps) != 0 {
+		t.Fatal("expect no error")
+	}
+
+	fileName = "caps_pkg.go"
+	file = readFile(fileName)
+	_checkerFail := checker{PackageName: true}
+	ps, err = _checkerFail.Check(fileName, file)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(ps) == 0 {
+		t.Fatal("expect 1 error")
+	}
+	fileName = "underscore_pkg.go"
+	file = readFile(fileName)
+	ps, err = _checkerFail.Check(fileName, file)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(ps) == 0 {
+		t.Fatal("expect 1 error")
+	}
+}
