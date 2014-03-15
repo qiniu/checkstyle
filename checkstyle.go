@@ -163,9 +163,9 @@ func (f *file) checkFileContent() {
 		var desc string
 		if strings.Contains(pkgName, "_") {
 			suggestName := strings.Replace(pkgName, "_", "/", -1)
-			desc = "don't use an underscore in package name," + pkgName + " should be " + suggestName
+			desc = "don't use an underscore in package name, " + pkgName + " should be " + suggestName
 		} else if strings.ToLower(pkgName) != pkgName {
-			desc = "don't use upper case in package name, " + pkgName + " should be single word"
+			desc = "don't use capital letters in package name: " + pkgName
 		}
 		if desc != "" {
 			start := f.fset.Position(f.ast.Name.Pos())
