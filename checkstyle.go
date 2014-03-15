@@ -19,6 +19,7 @@ const (
 	ParamsNum    ProblemType = "params_num"
 	ResultsNum   ProblemType = "results_num"
 	Formated     ProblemType = "formated"
+	PackageName  ProblemType = "pkg_name"
 )
 
 type Problem struct {
@@ -42,6 +43,7 @@ type checker struct {
 	Fatal           []string `json:"fatal"`
 	ParamsNum       int      `json:"params_num"`
 	ResultsNum      int      `json:"results_num"`
+	PackageName     bool     `json:"pkg_name"`
 }
 
 func New(config []byte) (Checker, error) {
@@ -90,7 +92,7 @@ func (f *file) isTest() bool {
 func (f *file) check() (ps []Problem) {
 	f.checkFormat()
 	f.checkFileLine()
-	f.checkFunctionLine()
+	f.checkFileContent()
 	return f.problems
 }
 
@@ -150,9 +152,26 @@ func genResultsNumProblem(name string, resultsNum, limit int, start token.Positi
 	return Problem{Description: desc, Position: &start, Type: ResultsNum}
 }
 
-func (f *file) checkFunctionLine() {
+func (f *file) checkFileContent() {
 	if f.isTest() {
 		return
+	}
+
+	if f.config.PackageName {
+		//ref "http://golang.org/doc/effective_go.html#package-names"
+		pkgName := f.ast.Name.Name
+		var desc string
+		if strings.Contains(pkgName, "_") {
+			suggestName := strings.Replace(pkgName, "_", "/", -1)
+			desc = "don't use an underscore in package name," + pkgName + " should be " + suggestName
+		} else if strings.ToLower(pkgName) != pkgName {
+			desc = "don't use upper case in package name, " + pkgName + " should be single word"
+		}
+		if desc != "" {
+			start := f.fset.Position(f.ast.Name.Pos())
+			problem := Problem{Description: desc, Position: &start, Type: PackageName}
+			f.problems = append(f.problems, problem)
+		}
 	}
 
 	lineLimit := f.config.FunctionLine

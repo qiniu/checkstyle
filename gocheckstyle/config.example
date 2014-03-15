@@ -6,6 +6,7 @@
     "results_num":3,
     "max_indent":10,
     "formated": true,
+    "pkg_name": true,
     "ignore":["
         "tmp/*",
         "src/tmp.go"
