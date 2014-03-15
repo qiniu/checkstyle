@@ -104,7 +104,7 @@ func (f *file) checkFormat() {
 	if err != nil {
 		panic(f.fileName + err.Error())
 	}
-	if bytes.Compare(src, f.src) != 0 {
+	if len(src) != len(f.src) || bytes.Compare(src, f.src) != 0 {
 		desc := "source is not formated"
 		pos := f.fset.Position(f.ast.Pos())
 		problem := Problem{Description: desc, Position: &pos, Type: Formated}
