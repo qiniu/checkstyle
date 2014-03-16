@@ -225,7 +225,7 @@ func (f *file) checkFunctionDeclare(funcDecl *ast.FuncDecl) {
 	f.checkName(funcDecl.Name, "func", false)
 	f.checkFunctionParams(funcDecl.Type, funcDecl.Name.Name)
 	receiver := funcDecl.Recv
-	if receiver != nil {
+	if receiver != nil && len(receiver.List) != 0 && len(receiver.List[0].Names) != 0 {
 		f.checkName(receiver.List[0].Names[0], "receiver", true)
 	}
 }
