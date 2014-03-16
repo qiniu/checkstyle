@@ -1,7 +1,7 @@
 go-checkstyle
 =============
 
-checkstyle is a style check tool like java checkstyle. This tool inspired by [java checkstyle](https://github.com/checkstyle/checkstyle), [golint] (https://github.com/golang/lint)
+checkstyle is a style check tool like java checkstyle. This tool inspired by [java checkstyle](https://github.com/checkstyle/checkstyle), [golint] (https://github.com/golang/lint). The style is according to [Go Code Review Comments](https://code.google.com/p/go-wiki/wiki/CodeReviewComments)
 
 ##to install, run
   go get github.com/qiniu/checkstyle/gocheckstyle
