@@ -73,7 +73,7 @@ type xmlReporter struct {
 }
 
 func (x *xmlReporter) printProblems(ps []checkstyle.Problem) {
-	format := "\t\t<error line=\"%d\" column=\"%d\" severity=\"%s\" message=\"%s\" source=\"%s\" />\n"
+	format := "\t\t<error line=\"%d\" column=\"%d\" severity=\"%s\" message=\"%s\" source=\"checkstyle.%s\" />\n"
 	for _, p := range ps {
 		severity := "warning"
 		if checker.IsFatal(&p) {
