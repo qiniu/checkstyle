@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"encoding/xml"
 	"flag"
 	"io/ioutil"
 	"log"
@@ -13,8 +14,10 @@ import (
 )
 
 var config = flag.String("config", "", "config json file")
+var reporterOption = flag.String("reporter", "plain", "report output format, plain or xml")
 
 var checker checkstyle.Checker
+var reporter Reporter
 
 type Ignore struct {
 	Files []string `json:"ignore"`
@@ -22,8 +25,86 @@ type Ignore struct {
 
 var ignore Ignore
 
-var normalProblems []*checkstyle.Problem
-var fatalProblems []*checkstyle.Problem
+type Reporter interface {
+	ReceiveProblems(checker checkstyle.Checker, file string, problems []checkstyle.Problem)
+	Report()
+}
+
+type plainReporter struct {
+	normalProblems []*checkstyle.Problem
+	fatalProblems  []*checkstyle.Problem
+}
+
+func (_ *plainReporter) printProblems(ps []*checkstyle.Problem) {
+	for _, p := range ps {
+		log.Printf("%v: %s\n", p.Position, p.Description)
+	}
+}
+
+func (p *plainReporter) Report() {
+	if len(p.normalProblems) != 0 {
+		log.Printf(" ========= There are %d normal problems ========= \n", len(p.normalProblems))
+		p.printProblems(p.normalProblems)
+	}
+
+	if len(p.fatalProblems) != 0 {
+		log.Printf(" ========= There are %d fatal problems ========= \n", len(p.fatalProblems))
+		p.printProblems(p.fatalProblems)
+		os.Exit(1)
+	}
+	if len(p.normalProblems) == 0 && len(p.fatalProblems) == 0 {
+		log.Println(" ========= There are no problems ========= ")
+	}
+}
+
+func (p *plainReporter) ReceiveProblems(checker checkstyle.Checker, file string, problems []checkstyle.Problem) {
+	for i, problem := range problems {
+		if checker.IsFatal(&problem) {
+			p.fatalProblems = append(p.fatalProblems, &problems[i])
+		} else {
+			p.normalProblems = append(p.normalProblems, &problems[i])
+		}
+	}
+}
+
+type xmlReporter struct {
+	problems map[string][]checkstyle.Problem
+	hasFatal bool
+}
+
+func (x *xmlReporter) printProblems(ps []checkstyle.Problem) {
+	format := "\t\t<error line=\"%d\" column=\"%d\" severity=\"%s\" message=\"%s\" source=\"%s\" />\n"
+	for _, p := range ps {
+		severity := "warning"
+		if checker.IsFatal(&p) {
+			severity = "error"
+			x.hasFatal = true
+		}
+		log.Printf(format, p.Position.Line, p.Position.Column, severity, p.Description, p.Type)
+	}
+}
+
+func (x *xmlReporter) Report() {
+	log.SetFlags(0)
+	log.Print(xml.Header)
+	log.Println(`<checkstyle version="4.3">`)
+	for k, v := range x.problems {
+		if len(v) == 0 {
+			continue
+		}
+		log.Printf("\t<file name=\"%s\">\n", k)
+		x.printProblems(v)
+		log.Println("\t</file>")
+	}
+	log.Println("</checkstyle>")
+	if x.hasFatal {
+		os.Exit(1)
+	}
+}
+
+func (x *xmlReporter) ReceiveProblems(checker checkstyle.Checker, file string, problems []checkstyle.Problem) {
+	x.problems[file] = problems
+}
 
 func main() {
 	flag.Parse()
@@ -32,6 +113,11 @@ func main() {
 
 	if config == nil {
 		log.Fatalln("No config")
+	}
+	if reporterOption == nil || *reporterOption != "xml" {
+		reporter = &plainReporter{}
+	} else {
+		reporter = &xmlReporter{problems: map[string][]checkstyle.Problem{}}
 	}
 	conf, err := ioutil.ReadFile(*config)
 	if err != nil {
@@ -55,25 +141,7 @@ func main() {
 		}
 	}
 
-	if len(normalProblems) != 0 {
-		log.Printf(" ========= There are %d normal problems ========= \n", len(normalProblems))
-		printProblems(normalProblems)
-	}
-
-	if len(fatalProblems) != 0 {
-		log.Printf(" ========= There are %d fatal problems ========= \n", len(fatalProblems))
-		printProblems(fatalProblems)
-		os.Exit(1)
-	}
-	if len(normalProblems) == 0 && len(fatalProblems) == 0 {
-		log.Println(" ========= There are no problems ========= ")
-	}
-}
-
-func printProblems(ps []*checkstyle.Problem) {
-	for _, p := range ps {
-		log.Printf("%v: %s\n", p.Position, p.Description)
-	}
+	reporter.Report()
 }
 
 func isDir(filename string) bool {
@@ -92,13 +160,7 @@ func checkFile(fileName string) {
 		log.Fatalf("Parse File Fail %v %v\n", fileName, err)
 	}
 
-	for i, p := range ps {
-		if checker.IsFatal(&p) {
-			fatalProblems = append(fatalProblems, &ps[i])
-		} else {
-			normalProblems = append(normalProblems, &ps[i])
-		}
-	}
+	reporter.ReceiveProblems(checker, fileName, ps)
 }
 
 func isIgnoreFile(fileName string) bool {
