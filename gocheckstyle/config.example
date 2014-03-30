@@ -1,17 +1,15 @@
 {
-    "func_comment" : false,
     "file_line":200,
     "func_line":50,
     "params_num":4,
     "results_num":3,
-    "max_indent":10,
     "formated": true,
     "pkg_name": true,
     "camel_name": true,
-    "ignore":["
+    "ignore":[
         "tmp/*",
         "src/tmp.go"
-    "],
+    ],
     "fatal":[
         "formated"
     ]
