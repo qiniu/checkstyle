@@ -49,6 +49,6 @@ then add postbuild checkstyle file gostyle.xml
 Run checkstyle with one or more filenames or directories. The output of this tool is a list of suggestions. If you need to force obey the rule, place it in fatal.
 
 ## checkstyle's difference with other tools
-Checkstyle differs from gofmt. Gofmt reformats Go source code, whereas checkstyle prints out coding style suggerstion.
+Checkstyle differs from gofmt. Gofmt reformats Go source code, whereas checkstyle prints out coding style suggestion.
 
-Checkstyle differs from golint. Checkstyle only checks coding rule, not mistake; it is just subjective suggestion.
+Checkstyle differs from golint. Checkstyle check file line/function line/param number, could be configed by user.
