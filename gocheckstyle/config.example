@@ -1,16 +1,25 @@
 {
     "file_line":200,
+    "_file_line_comment": "file line count limit",
     "func_line":50,
+    "_func_line_comment": "function line count limit",
     "params_num":4,
+    "_params_num_comment": "function parameter count limit",
     "results_num":3,
+    "_results_num_comment": "function return variable count limit",
     "formated": true,
+    "_formated_comment": "gofmt",
     "pkg_name": true,
+    "_pkg_name_comment": "package name should not contain _ and camel",
     "camel_name": true,
+    "_camel_name_comment": "const/var/function/import name should use camel name",
     "ignore":[
         "tmp/*",
         "src/tmp.go"
     ],
+    "_ignore_comment":"ignore file",
     "fatal":[
         "formated"
-    ]
+    ],
+    "_fatal_comment": "put the check rule of error level here"
 }
