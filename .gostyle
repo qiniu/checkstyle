@@ -1,0 +1,23 @@
+{
+    "file_line":500,
+    "func_line":50,
+    "params_num":4,
+    "results_num":3,
+    "formated": true,
+    "pkg_name": true,
+    "camel_name": true,
+    "ignore":[
+        "testdata/*",
+        "temp/*"
+    ],
+    "fatal":[
+        "formated",
+        "file_line",
+        "func_line",
+        "params_num",
+        "results_num",
+        "formated",
+        "pkg_name",
+        "camel_name"
+    ]
+}

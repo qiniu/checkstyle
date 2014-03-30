@@ -65,6 +65,9 @@ func main() {
 		printProblems(fatalProblems)
 		os.Exit(1)
 	}
+	if len(normalProblems) == 0 && len(fatalProblems) == 0 {
+		log.Println(" ========= There are no problems ========= ")
+	}
 }
 
 func printProblems(ps []*checkstyle.Problem) {
