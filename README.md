@@ -33,11 +33,18 @@ checkstyle is a style check tool like java checkstyle. This tool inspired by [ja
 ##add to makefile
 ```
 check_go_style:
-	bash -c "mkdir -p checkstyle; cd checkstyle && export GOPATH=`pwd`/checkstyle && go get github.com/qiniu/checkstyle/gocheckstyle"
+	bash -c "mkdir -p checkstyle; cd checkstyle && export GOPATH=`pwd` && go get github.com/qiniu/checkstyle/gocheckstyle"
 	checkstyle/bin/gocheckstyle -config=.go_style dir1 dir2
 
 ```
 
+##integrate with jenkins checkstyle plugin
+excute in shell
+```
+    mkdir -p checkstyle; cd checkstyle && export GOPATH=`pwd` && go get github.com/qiniu/checkstyle/gocheckstyle"
+    checkstyle/bin/gocheckstyle -reporter=xml -config=.go_style dir1 dir2 2>gostyle.xml
+```
+then add postbuild checkstyle file gostyle.xml
 
 Run checkstyle with one or more filenames or directories. The output of this tool is a list of suggestions. If you need to force obey the rule, place it in fatal.
 
