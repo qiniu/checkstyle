@@ -89,9 +89,6 @@ func (x *xmlReporter) Report() {
 	log.Print(xml.Header)
 	log.Println(`<checkstyle version="4.3">`)
 	for k, v := range x.problems {
-		if len(v) == 0 {
-			continue
-		}
 		log.Printf("\t<file name=\"%s\">\n", k)
 		x.printProblems(v)
 		log.Println("\t</file>")
@@ -103,6 +100,9 @@ func (x *xmlReporter) Report() {
 }
 
 func (x *xmlReporter) ReceiveProblems(checker checkstyle.Checker, file string, problems []checkstyle.Problem) {
+	if len(problems) == 0 {
+		return
+	}
 	x.problems[file] = problems
 }
 
