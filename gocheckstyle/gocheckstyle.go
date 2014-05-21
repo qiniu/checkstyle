@@ -13,6 +13,32 @@ import (
 	"github.com/qiniu/checkstyle"
 )
 
+const defaultConfig = `{
+    "file_line":200,
+    "_file_line_comment": "file line count limit",
+    "func_line":50,
+    "_func_line_comment": "function line count limit",
+    "params_num":4,
+    "_params_num_comment": "function parameter count limit",
+    "results_num":3,
+    "_results_num_comment": "function return variable count limit",
+    "formated": true,
+    "_formated_comment": "gofmt",
+    "pkg_name": true,
+    "_pkg_name_comment": "package name should not contain _ and camel",
+    "camel_name": true,
+    "_camel_name_comment": "const/var/function/import name should use camel name",
+    "ignore":[
+        "tmp/*",
+        "src/tmp.go"
+    ],
+    "_ignore_comment":"ignore file",
+    "fatal":[
+        "formated"
+    ],
+    "_fatal_comment": "put the check rule of error level here"
+}`
+
 var config = flag.String("config", "", "config json file")
 var reporterOption = flag.String("reporter", "plain", "report output format, plain or xml")
 
@@ -111,19 +137,21 @@ func main() {
 
 	files := flag.Args()
 
-	if config == nil {
-		log.Fatalln("No config")
-	}
 	if reporterOption == nil || *reporterOption != "xml" {
 		reporter = &plainReporter{}
 	} else {
 		reporter = &xmlReporter{problems: map[string][]checkstyle.Problem{}}
 	}
-	conf, err := ioutil.ReadFile(*config)
-	if err != nil {
-		log.Fatalf("Open config %v fail %v\n", *config, err)
+	var err error
+	var conf []byte
+	if *config == "" {
+		conf = []byte(defaultConfig)
+	} else {
+		conf, err = ioutil.ReadFile(*config)
+		if err != nil {
+			log.Fatalf("Open config %v fail %v\n", *config, err)
+		}
 	}
-
 	err = json.Unmarshal(conf, &ignore)
 	if err != nil {
 		log.Fatalf("Parse config %v fail \n", *config, err)
@@ -133,6 +161,9 @@ func main() {
 		log.Fatalf("New checker fail %v\n", err)
 	}
 
+	if len(files) == 0 {
+		files = []string{"."}
+	}
 	for _, v := range files {
 		if isDir(v) {
 			checkDir(v)
@@ -140,7 +171,6 @@ func main() {
 			checkFile(v)
 		}
 	}
-
 	reporter.Report()
 }
 
