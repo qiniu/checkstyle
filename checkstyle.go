@@ -154,6 +154,11 @@ func genResultsNumProblem(name string, resultsNum, limit int, start token.Positi
 	return Problem{Description: desc, Position: &start, Type: ResultsNum}
 }
 
+func genFuncBodyProblem(name string, start token.Position) Problem {
+	desc := "func " + name + " expected block '{}'"
+	return Problem{Description: desc, Position: &start, Type: ResultsNum}
+}
+
 func (f *file) checkPkgName(pkg *ast.Ident) {
 	//ref "http://golang.org/doc/effective_go.html#package-names"
 	pkgName := pkg.Name
@@ -220,10 +225,20 @@ func (f *file) checkFunctionLine(funcDecl *ast.FuncDecl) {
 	}
 }
 
+func (f *file) checkFunctionBody(funcDecl *ast.FuncDecl) {
+	if funcDecl.Body != nil {
+		return
+	}
+	start := f.fset.Position(funcDecl.Pos())
+	problem := genFuncBodyProblem(funcDecl.Name.Name, start)
+	f.problems = append(f.problems, problem)
+}
+
 func (f *file) checkFunctionDeclare(funcDecl *ast.FuncDecl) {
 	f.checkFunctionLine(funcDecl)
 	f.checkName(funcDecl.Name, "func", false)
 	f.checkFunctionParams(funcDecl.Type, funcDecl.Name.Name)
+	f.checkFunctionBody(funcDecl)
 	receiver := funcDecl.Recv
 	if receiver != nil && len(receiver.List) != 0 && len(receiver.List[0].Names) != 0 {
 		f.checkName(receiver.List[0].Names[0], "receiver", true)
@@ -351,6 +366,9 @@ func (f *file) checkFileContent() {
 		switch decl := v.(type) {
 		case *ast.FuncDecl:
 			f.checkFunctionDeclare(decl)
+			if decl.Body == nil {
+				break
+			}
 			ast.Inspect(decl.Body, func(node ast.Node) bool {
 				switch decl2 := node.(type) {
 				case *ast.GenDecl:
