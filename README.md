@@ -4,13 +4,14 @@ go-checkstyle
 
 checkstyle is a style check tool like java checkstyle. This tool inspired by [java checkstyle](https://github.com/checkstyle/checkstyle), [golint] (https://github.com/golang/lint). The style refered to some points in [Go Code Review Comments](https://code.google.com/p/go-wiki/wiki/CodeReviewComments).
 
-##to install, run
+# Install
   go get github.com/qiniu/checkstyle/gocheckstyle
 
-##to run
+# Run
   gocheckstyle -config=.go_style dir1 dir2
 
-##config is json file like following
+# Config 
+config is json file like the following:
 ```
 {
     "file_line": 500,
@@ -31,7 +32,7 @@ checkstyle is a style check tool like java checkstyle. This tool inspired by [ja
 
 ```
 
-##add to makefile
+# Add to makefile
 ```
 check_go_style:
 	bash -c "mkdir -p checkstyle; cd checkstyle && export GOPATH=`pwd` && go get github.com/qiniu/checkstyle/gocheckstyle"
@@ -39,7 +40,7 @@ check_go_style:
 
 ```
 
-##integrate with jenkins checkstyle plugin
+# Integrate with jenkins checkstyle plugin
 excute in shell
 ```
     mkdir -p checkstyle; cd checkstyle && export GOPATH=`pwd` && go get github.com/qiniu/checkstyle/gocheckstyle"
@@ -49,7 +50,7 @@ then add postbuild checkstyle file gostyle.xml
 
 Run checkstyle with one or more filenames or directories. The output of this tool is a list of suggestions. If you need to force obey the rule, place it in fatal.
 
-## checkstyle's difference with other tools
+# Checkstyle's difference with other tools
 Checkstyle differs from gofmt. Gofmt reformats Go source code, whereas checkstyle prints out coding style suggestion.
 
 Checkstyle differs from golint. Checkstyle check file line/function line/param number, could be configed by user.
