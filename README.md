@@ -2,7 +2,7 @@ go-checkstyle
 =============
 [![Build Status](https://api.travis-ci.org/qiniu/checkstyle.png?branch=master)](https://travis-ci.org/qiniu/checkstyle)
 
-checkstyle is a style check tool like java checkstyle. This tool inspired by [java checkstyle](https://github.com/checkstyle/checkstyle), [golint] (https://github.com/golang/lint). The style refered to some points in [Go Code Review Comments](https://code.google.com/p/go-wiki/wiki/CodeReviewComments).
+checkstyle is a style check tool like java checkstyle. This tool inspired by [java checkstyle](https://github.com/checkstyle/checkstyle), [golint](https://github.com/golang/lint). The style refered to some points in [Go Code Review Comments](https://code.google.com/p/go-wiki/wiki/CodeReviewComments).
 
 # Install
   go get github.com/qiniu/checkstyle/gocheckstyle
