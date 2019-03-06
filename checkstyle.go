@@ -7,6 +7,7 @@ import (
 	"go/format"
 	"go/parser"
 	"go/token"
+	"reflect"
 	"strconv"
 	"strings"
 )
@@ -14,13 +15,14 @@ import (
 type ProblemType string
 
 const (
-	FileLine     ProblemType = "file_line"
-	FunctionLine ProblemType = "func_line"
-	ParamsNum    ProblemType = "params_num"
-	ResultsNum   ProblemType = "results_num"
-	Formated     ProblemType = "formated"
-	PackageName  ProblemType = "pkg_name"
-	CamelName    ProblemType = "camel_name"
+	FileLine      ProblemType = "file_line"
+	FunctionLine  ProblemType = "func_line"
+	ParamsNum     ProblemType = "params_num"
+	ResultsNum    ProblemType = "results_num"
+	Formated      ProblemType = "formated"
+	PackageName   ProblemType = "pkg_name"
+	CamelName     ProblemType = "camel_name"
+	ForbiddenExpr ProblemType = "forbidden_expr"
 )
 
 type Problem struct {
@@ -36,16 +38,17 @@ type Checker interface {
 }
 
 type checker struct {
-	FunctionComment bool     `json:"func_comment"`
-	FileLine        int      `json:"file_line"`
-	FunctionLine    int      `json:"func_line"`
-	MaxIndent       int      `json:"max_indent"`
-	Formated        bool     `json:"formated"`
-	Fatal           []string `json:"fatal"`
-	ParamsNum       int      `json:"params_num"`
-	ResultsNum      int      `json:"results_num"`
-	PackageName     bool     `json:"pkg_name"`
-	CamelName       bool     `json:"camel_name"`
+	FunctionComment bool           `json:"func_comment"`
+	FileLine        int            `json:"file_line"`
+	FunctionLine    int            `json:"func_line"`
+	MaxIndent       int            `json:"max_indent"`
+	Formated        bool           `json:"formated"`
+	Fatal           []string       `json:"fatal"`
+	ParamsNum       int            `json:"params_num"`
+	ResultsNum      int            `json:"results_num"`
+	PackageName     bool           `json:"pkg_name"`
+	CamelName       bool           `json:"camel_name"`
+	ForbiddenExpr   []reflect.Type `json:"forbidden_expr"`
 }
 
 func New(config []byte) (Checker, error) {
@@ -156,6 +159,11 @@ func genResultsNumProblem(name string, resultsNum, limit int, start token.Positi
 
 func genFuncBodyProblem(name string, start token.Position) Problem {
 	desc := "func " + name + " expected block '{}'"
+	return Problem{Description: desc, Position: &start, Type: ResultsNum}
+}
+
+func genForbExprProblem(name string, start token.Position) Problem {
+	desc := "expr " + name + " is forbidden"
 	return Problem{Description: desc, Position: &start, Type: ResultsNum}
 }
 
@@ -353,6 +361,20 @@ func (f *file) checkAssign(assign *ast.AssignStmt) {
 	}
 }
 
+func (f *file) checkForbiddenExpr(n *ast.Node, t reflect.Type) {
+	if t != nil {
+		for _, fbExpr := range f.config.ForbiddenExpr {
+			t = t.Elem()
+			if t == fbExpr {
+				pos := f.fset.Position((*n).Pos())
+				desc := "expr " + t.String() + " is forbidden"
+				problem := Problem{Description: desc, Position: &pos, Type: ForbiddenExpr}
+				f.problems = append(f.problems, problem)
+			}
+		}
+	}
+}
+
 func (f *file) checkFileContent() {
 	if f.isTest() {
 		return
@@ -380,6 +402,7 @@ func (f *file) checkFileContent() {
 				case *ast.StructType:
 					f.checkStruct(decl2)
 				}
+				f.checkForbiddenExpr(&node, reflect.TypeOf(node))
 				return true
 			})
 		case *ast.GenDecl:
