@@ -164,7 +164,7 @@ func genFuncBodyProblem(name string, start token.Position) Problem {
 
 func genForbExprProblem(name string, start token.Position) Problem {
 	desc := "expr " + name + " is forbidden"
-	return Problem{Description: desc, Position: &start, Type: ResultsNum}
+	return Problem{Description: desc, Position: &start, Type: ForbiddenExpr}
 }
 
 func (f *file) checkPkgName(pkg *ast.Ident) {
@@ -367,8 +367,7 @@ func (f *file) checkForbiddenExpr(n *ast.Node, t reflect.Type) {
 			t = t.Elem()
 			if t == fbExpr {
 				pos := f.fset.Position((*n).Pos())
-				desc := "expr " + t.String() + " is forbidden"
-				problem := Problem{Description: desc, Position: &pos, Type: ForbiddenExpr}
+				problem := genForbExprProblem(t.String(), pos)
 				f.problems = append(f.problems, problem)
 			}
 		}

@@ -224,7 +224,6 @@ func TestDefer(t *testing.T) {
 	if len(ps) != 1 {
 		t.Fatal("expect 1 error but ", len(ps))
 	}
-
 	fileName = "no_defer.go"
 	file = readFile(fileName)
 	ps, err = _checkerFail.Check(fileName, file)
