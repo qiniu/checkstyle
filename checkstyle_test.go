@@ -1,6 +1,7 @@
 package checkstyle
 
 import (
+	"go/ast"
 	"go/parser"
 	"go/token"
 	"io/ioutil"
@@ -223,6 +224,37 @@ func TestCamelName(t *testing.T) {
 		t.Fatal("expect 30 error but ", len(ps))
 	}
 	fileName = "camel_name.go"
+	file = readFile(fileName)
+	ps, err = _checkerFail.Check(fileName, file)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(ps) != 0 {
+		t.Fatal("expect no error")
+	}
+}
+
+func TestDefer(t *testing.T) {
+	fileName := "defer.go"
+	file := readFile(fileName)
+	_checker := checker{ForbiddenExpr: []reflect.Type{}}
+	ps, err := _checker.Check(fileName, file)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(ps) != 0 {
+		t.Fatal("expect no error")
+	}
+	fbExpr := []reflect.Type{reflect.TypeOf(ast.DeferStmt{})}
+	_checkerFail := checker{ForbiddenExpr: fbExpr}
+	ps, err = _checkerFail.Check(fileName, file)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(ps) != 1 {
+		t.Fatal("expect 1 error but ", len(ps))
+	}
+	fileName = "no_defer.go"
 	file = readFile(fileName)
 	ps, err = _checkerFail.Check(fileName, file)
 	if err != nil {
