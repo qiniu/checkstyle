@@ -23,7 +23,8 @@ config is json file like the following:
     "camel_name":true,
     "ignore":[
         "a/*",
-        "b/*/c/*.go"
+        "b/*/c/*.go",
+	"**/*.gen.go"
     ],
     "fatal":[
         "formated"
