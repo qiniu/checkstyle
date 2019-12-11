@@ -10,6 +10,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/bmatcuk/doublestar"
+
 	"github.com/qiniu/checkstyle"
 )
 
@@ -195,7 +197,7 @@ func checkFile(fileName string) {
 
 func isIgnoreFile(fileName string) bool {
 	for _, v := range ignore.Files {
-		if ok, _ := filepath.Match(v, fileName); ok {
+		if ok, _ := doublestar.Match(v, fileName); ok {
 			return true
 		}
 	}
@@ -204,7 +206,7 @@ func isIgnoreFile(fileName string) bool {
 
 func isIgnoreDir(dir string) bool {
 	for _, v := range ignore.Files {
-		if ok, _ := filepath.Match(v, dir); ok {
+		if ok, _ := doublestar.Match(v, dir); ok {
 			return true
 		}
 	}
