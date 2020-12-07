@@ -195,7 +195,7 @@ func (f *file) checkFunctionParams(fType *ast.FuncType, funcName string) {
 
 	results := fType.Results
 	if results != nil {
-		if resultsNumLimit != 0 && results != nil && results.NumFields() > resultsNumLimit {
+		if resultsNumLimit != 0 && results.NumFields() > resultsNumLimit {
 			start := f.fset.Position(results.Pos())
 			problem := genResultsNumProblem(funcName, results.NumFields(), resultsNumLimit, start)
 			f.problems = append(f.problems, problem)
