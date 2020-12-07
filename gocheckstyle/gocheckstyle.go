@@ -85,7 +85,7 @@ func (p *plainReporter) Report() {
 	}
 }
 
-func (p *plainReporter) ReceiveProblems(checker checkstyle.Checker, file string, problems []checkstyle.Problem) {
+func (p *plainReporter) ReceiveProblems(checker checkstyle.Checker, _ string, problems []checkstyle.Problem) {
 	for i, problem := range problems {
 		if checker.IsFatal(&problem) {
 			p.fatalProblems = append(p.fatalProblems, &problems[i])
@@ -127,7 +127,7 @@ func (x *xmlReporter) Report() {
 	}
 }
 
-func (x *xmlReporter) ReceiveProblems(checker checkstyle.Checker, file string, problems []checkstyle.Problem) {
+func (x *xmlReporter) ReceiveProblems(_ checkstyle.Checker, file string, problems []checkstyle.Problem) {
 	if len(problems) == 0 {
 		return
 	}
@@ -156,7 +156,7 @@ func main() {
 	}
 	err = json.Unmarshal(conf, &ignore)
 	if err != nil {
-		log.Fatalf("Parse config %v fail \n", *config, err)
+		log.Fatalf("Parse config %v fail %v\n", *config, err)
 	}
 	checker, err = checkstyle.New(conf)
 	if err != nil {
