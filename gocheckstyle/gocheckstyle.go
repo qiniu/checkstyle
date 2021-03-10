@@ -10,9 +10,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/bmatcuk/doublestar"
+	"github.com/bmatcuk/doublestar/v3"
 
-	"github.com/qiniu/checkstyle"
+	"github.com/tomcz/checkstyle"
 )
 
 const defaultConfig = `{

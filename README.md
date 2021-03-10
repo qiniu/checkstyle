@@ -1,11 +1,12 @@
 go-checkstyle
 =============
-[![Build Status](https://api.travis-ci.org/qiniu/checkstyle.png?branch=master)](https://travis-ci.org/qiniu/checkstyle)
+
+Forked from https://github.com/qiniu/checkstyle to allow "\*\*" in ignore paths via https://github.com/bmatcuk/doublestar.
 
 checkstyle is a style check tool like java checkstyle. This tool inspired by [java checkstyle](https://github.com/checkstyle/checkstyle), [golint](https://github.com/golang/lint). The style refered to some points in [Go Code Review Comments](https://code.google.com/p/go-wiki/wiki/CodeReviewComments).
 
 # Install
-  go get github.com/qiniu/checkstyle/gocheckstyle
+  go get github.com/tomcz/checkstyle/gocheckstyle
 
 # Run
   gocheckstyle -config=.go_style dir1 dir2
@@ -24,7 +25,7 @@ config is json file like the following:
     "ignore":[
         "a/*",
         "b/*/c/*.go",
-	"**/*.gen.go"
+        "**/*.gen.go"
     ],
     "fatal":[
         "formated"
@@ -36,7 +37,7 @@ config is json file like the following:
 # Add to makefile
 ```
 check_go_style:
-	bash -c "mkdir -p checkstyle; cd checkstyle && export GOPATH=`pwd` && go get github.com/qiniu/checkstyle/gocheckstyle"
+	bash -c "mkdir -p checkstyle; cd checkstyle && export GOPATH=`pwd` && go get github.com/tomcz/checkstyle/gocheckstyle"
 	checkstyle/bin/gocheckstyle -config=.go_style dir1 dir2
 
 ```
@@ -44,7 +45,7 @@ check_go_style:
 # Integrate with jenkins checkstyle plugin
 excute in shell
 ```
-    mkdir -p checkstyle; cd checkstyle && export GOPATH=`pwd` && go get github.com/qiniu/checkstyle/gocheckstyle"
+    mkdir -p checkstyle; cd checkstyle && export GOPATH=`pwd` && go get github.com/tomcz/checkstyle/gocheckstyle"
     checkstyle/bin/gocheckstyle -reporter=xml -config=.go_style dir1 dir2 2>gostyle.xml
 ```
 then add postbuild checkstyle file gostyle.xml
